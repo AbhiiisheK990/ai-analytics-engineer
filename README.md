@@ -20,6 +20,22 @@ The system is designed to simulate the workflow of a **Senior Data Analyst / Ana
   - Data quality checks
   - Statistical summaries
   - Pattern, trend, risk, and opportunity detection
+## 🖼️ Application Screenshots
+
+### 📂 Dataset Upload & Preview
+![Dataset Upload](screenshots/dataset_upload.png)
+
+### 📊 AI-Generated EDA Report
+![EDA Report](screenshots/eda_report.png)
+
+### 📈 Automated Dashboards
+![Dashboards](screenshots/dashboards.png)
+
+### 💬 Conversational BI (Chat with Data)
+![Chat](screenshots/chat.png)
+
+### 📄 Executive PDF Report Export
+![PDF Export](screenshots/pdf_export.png)
 
 - 🧮 **AI-Generated SQL**
   - Automatic SQL query creation
