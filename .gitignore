@@ -1,0 +1,22 @@
+# Python virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+*.env
+
+# Streamlit / app generated files
+charts/
+*.pdf
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
