@@ -103,10 +103,23 @@ EDA:
                 result.plot(kind=p["chart"], x=p["x"], y=p["y"], ax=ax)
 
             img = save_chart(fig, f"{p['section']}_{p['x']}")
-            dashboards[p["section"]].append({
+            # Normalize section name to avoid KeyError
+            section = p["section"].lower()
+
+            if "executive" in section:
+                section_key = "Executive"
+            elif "performance" in section:
+                section_key = "Performance"
+            elif "risk" in section:
+                section_key = "Risk"
+            else:
+                section_key = "Executive"  # fallback
+
+            dashboards[section_key].append({
                 "title": p["sql"],
                 "image": img
             })
+
 
             st.subheader(f"{p['section']} Dashboard")
             st.code(p["sql"], language="sql")
