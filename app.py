@@ -100,7 +100,23 @@ EDA:
 
             fig, ax = plt.subplots()
             if p["chart"] != "table":
-                result.plot(kind=p["chart"], x=p["x"], y=p["y"], ax=ax)
+                # Safe plotting: validate columns before plotting
+                x_col = p["x"]
+                y_col = p["y"]
+
+                if x_col not in result.columns or y_col not in result.columns:
+                    # Fallback to first two columns
+                    cols = list(result.columns)
+
+                    if len(cols) >= 2:
+                        x_col = cols[0]
+                        y_col = cols[1]
+                    else:
+                        st.warning("Not enough data to plot this chart.")
+                        continue
+
+                result.plot(kind=p["chart"], x=x_col, y=y_col, ax=ax)
+
 
             img = save_chart(fig, f"{p['section']}_{p['x']}")
             # Normalize section name to avoid KeyError
