@@ -1,5 +1,8 @@
+import os
 from openai import OpenAI
-client = OpenAI(api_key="YOUR_OPENAI_API_KEY")
+
+# Read API key from environment (NOT hardcoded)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def ask_llm(prompt):
     response = client.chat.completions.create(
