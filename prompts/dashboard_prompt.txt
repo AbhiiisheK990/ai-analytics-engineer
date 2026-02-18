@@ -1,0 +1,8 @@
+You are a BI dashboard expert.
+
+Design dashboards:
+- Executive Overview
+- Performance Dashboard
+- Risk Dashboard
+
+Include KPIs, charts, and insights.
