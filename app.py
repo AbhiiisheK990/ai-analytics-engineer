@@ -152,7 +152,7 @@ EDA:
     # ========== CHAT ==========
     st.divider()
 st.subheader("💬 AI Chatbot")
-st.info("ℹ️ Ask questions related only to the uploaded dataset")
+st.info(" Ask questions related only to the uploaded dataset")
 question = st.text_input("Ask anything data-related...")
 
 if question:
