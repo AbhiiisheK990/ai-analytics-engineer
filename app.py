@@ -10,6 +10,10 @@ from pdf_report import generate_pdf
 st.set_page_config("AI Analytics Engineer", layout="wide")
 st.title("🤖 AI Analytics Engineer")
 
+# --------- Chat history state ---------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 # ---------------- UTILS ----------------
 def save_chart(fig, name):
     os.makedirs("charts", exist_ok=True)
@@ -160,6 +164,38 @@ Question:
 """)
         st.subheader("🧠 AI Answer")
         st.write(answer)
+
+st.subheader("💬 Chat with Your Data")
+
+question = st.text_input("Ask a business question")
+
+if question:
+    # Store user message
+    st.session_state.chat_history.append(
+        {"role": "user", "content": question}
+    )
+
+    # Build conversation context
+    conversation = ""
+    for msg in st.session_state.chat_history:
+        conversation += f"{msg['role'].upper()}: {msg['content']}\n"
+
+    answer = ask_llm(conversation)
+
+    # Store assistant reply
+    st.session_state.chat_history.append(
+        {"role": "assistant", "content": answer}
+    )
+
+# Display chat history
+for msg in st.session_state.chat_history:
+    if msg["role"] == "user":
+        st.markdown(f"**You:** {msg['content']}")
+    else:
+        st.markdown(f"**AI:** {msg['content']}")
+# Clear chat history
+if st.button("🧹 Clear Chat History"):
+    st.session_state.chat_history = []
 
     # ========== PDF EXPORT ==========
     if "dashboards" in st.session_state and st.button("📄 Export Full AI Report (PDF)"):
