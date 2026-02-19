@@ -152,8 +152,8 @@ EDA:
     # ========== CHAT ==========
     st.divider()
 st.subheader("💬 AI Chatbot")
-
-question = st.text_input("Ask anything (data-related or general)")
+st.info("ℹ️ Ask questions related only to the uploaded dataset")
+question = st.text_input("Ask anything data-related...")
 
 if question:
     # Store user message
@@ -162,14 +162,26 @@ if question:
     )
 
     # Build conversation with memory
-    conversation = """
-You are a helpful AI assistant.
-You can answer general questions and data-related questions.
-Keep answers clear and concise.
+    conversation = f"""
+You are a data analyst.
 
-Conversation:
+STRICT RULES:
+- Answer ONLY using the uploaded dataset and the AI-generated EDA.
+- DO NOT use general knowledge.
+- DO NOT explain concepts unrelated to the data.
+- If the answer cannot be derived from the data, reply exactly:
+  "Not enough data available in the dataset."
+
+DATA CONTEXT:
+Dataset columns:
+{df.columns.tolist()}
+
+EDA SUMMARY:
+{st.session_state.eda}
+
+CHAT HISTORY:
 """
-
+    
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
