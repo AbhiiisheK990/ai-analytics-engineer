@@ -188,6 +188,31 @@ if question and "eda" in st.session_state:
         "content": question
     })
 
+    # Build STRICT data-only conversation
+    conversation = f"""
+    You are a data analyst.
+
+    RULES:
+    - Answer ONLY using the information provided below.
+    - Base answers on data patterns, statistics, and EDA.
+    - If the question cannot be reasonably answered from the data, reply exactly:
+    "Not enough data available in the dataset."
+
+    DATA SCHEMA:
+    Columns: {df.columns.tolist()}
+
+    DATA SNAPSHOT (first 5 rows):
+    {df.head().to_string()}
+
+    SUMMARY STATISTICS:
+    {df.describe(include='all').to_string()}
+
+    EDA INSIGHTS:
+    {st.session_state.eda}
+
+    Conversation:
+    """
+
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
