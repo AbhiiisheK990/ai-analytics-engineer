@@ -79,75 +79,55 @@ Stats:
         st.write(st.session_state.eda)
 
     # ========== DASHBOARDS ==========
-    if "eda" in st.session_state and st.button("Build AI Dashboards"):
-        sql_input = f"""{SQL_PROMPT}
+for p in plans:
+    if not p["sql"].lower().startswith("select"):
+        continue
 
-Table: data
-Columns:
-{df.dtypes.astype(str)}
+    try:
+        result = pd.read_sql(p["sql"], conn)
+    except Exception:
+        continue  # skip invalid SQL
 
-EDA:
-{st.session_state.eda}
-"""
-        sql_plan = ask_llm(sql_input)
-        plans = parse_sql_plan(sql_plan)
+    chart = p["chart"]
+    x_col = p["x"]
+    y_col = p["y"]
 
-        dashboards = {"Executive": [], "Performance": [], "Risk": []}
-        sql_used = []
+    # Validate dashboard BEFORE plotting
+    if not is_valid_dashboard(result, chart, x_col, y_col):
+        continue
 
-        for p in plans:
-            if not p["sql"].lower().startswith("select"):
-                continue
+    sql_used.append(p["sql"])
 
-            result = pd.read_sql(p["sql"], conn)
-            sql_used.append(p["sql"])
+    # Normalize section
+    section = p["section"].lower()
+    if "executive" in section:
+        section_key = "Executive"
+    elif "performance" in section:
+        section_key = "Performance"
+    elif "risk" in section:
+        section_key = "Risk"
+    else:
+        section_key = "Executive"
 
-            fig, ax = plt.subplots()
-            if p["chart"] != "table":
-                # Safe plotting: validate columns before plotting
-                x_col = p["x"]
-                y_col = p["y"]
+    # Render
+    fig, ax = plt.subplots()
 
-                if x_col not in result.columns or y_col not in result.columns:
-                    # Fallback to first two columns
-                    cols = list(result.columns)
+    if chart == "table":
+        st.subheader(f"{section_key} Dashboard")
+        st.code(p["sql"], language="sql")
+        st.dataframe(result)
+    else:
+        result.plot(kind=chart, x=x_col, y=y_col, ax=ax)
+        img = save_chart(fig, f"{section_key}_{x_col}")
 
-                    if len(cols) >= 2:
-                        x_col = cols[0]
-                        y_col = cols[1]
-                    else:
-                        st.warning("Not enough data to plot this chart.")
-                        continue
+        dashboards[section_key].append({
+            "title": p["sql"],
+            "image": img
+        })
 
-                result.plot(kind=p["chart"], x=x_col, y=y_col, ax=ax)
-
-
-            img = save_chart(fig, f"{p['section']}_{p['x']}")
-            # Normalize section name to avoid KeyError
-            section = p["section"].lower()
-
-            if "executive" in section:
-                section_key = "Executive"
-            elif "performance" in section:
-                section_key = "Performance"
-            elif "risk" in section:
-                section_key = "Risk"
-            else:
-                section_key = "Executive"  # fallback
-
-            dashboards[section_key].append({
-                "title": p["sql"],
-                "image": img
-            })
-
-
-            st.subheader(f"{p['section']} Dashboard")
-            st.code(p["sql"], language="sql")
-            st.dataframe(result)
-            st.pyplot(fig)
-
-        st.session_state.dashboards = dashboards
-        st.session_state.sql_used = sql_used
+        st.subheader(f"{section_key} Dashboard")
+        st.code(p["sql"], language="sql")
+        st.pyplot(fig)
 
 # ========== CHAT ==========
 st.divider()
