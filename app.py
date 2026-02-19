@@ -7,8 +7,8 @@ import os
 from llm import ask_llm
 from pdf_report import generate_pdf
 
-st.set_page_config("AI Analytics Engineer", layout="wide")
-st.title("🤖 AI Analytics Engineer")
+st.set_page_config("AI Data Analyst", layout="wide")
+st.title("🤖 AI Data Analyst")
 
 # --------- Chat history state ---------
 if "chat_history" not in st.session_state:
