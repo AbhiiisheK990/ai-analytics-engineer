@@ -7,8 +7,8 @@ import os
 from llm import ask_llm
 from pdf_report import generate_pdf
 
-st.set_page_config("Offline AI Analytics Engineer", layout="wide")
-st.title("🤖 Offline AI Analytics Engineer")
+st.set_page_config("AI Analytics Engineer", layout="wide")
+st.title("🤖 AI Analytics Engineer")
 
 # ---------------- UTILS ----------------
 def save_chart(fig, name):
