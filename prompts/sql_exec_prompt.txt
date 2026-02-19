@@ -15,3 +15,9 @@ Y:
 <column>
 SECTION:
 Executive | Performance | Risk
+
+IMPORTANT:
+- Use SQLite-compatible SQL only
+- DO NOT use STD(), STDDEV(), VARIANCE()
+- For standard deviation use:
+  sqrt(avg(x*x) - avg(x)*avg(x))
