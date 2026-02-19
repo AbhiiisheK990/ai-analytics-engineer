@@ -151,23 +151,9 @@ EDA:
 
     # ========== CHAT ==========
     st.divider()
-    question = st.text_input("Ask a business question")
+st.subheader("💬 AI Chatbot")
 
-    if question and "eda" in st.session_state:
-        answer = ask_llm(f"""{CHAT_PROMPT}
-
-EDA:
-{st.session_state.eda}
-
-Question:
-{question}
-""")
-        st.subheader("🧠 AI Answer")
-        st.write(answer)
-
-st.subheader("💬 Chat with Your Data")
-
-question = st.text_input("Ask a business question")
+question = st.text_input("Ask anything (data-related or general)")
 
 if question:
     # Store user message
@@ -175,14 +161,22 @@ if question:
         {"role": "user", "content": question}
     )
 
-    # Build conversation context
-    conversation = ""
+    # Build conversation with memory
+    conversation = """
+You are a helpful AI assistant.
+You can answer general questions and data-related questions.
+Keep answers clear and concise.
+
+Conversation:
+"""
+
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
+    # Ask AI
     answer = ask_llm(conversation)
 
-    # Store assistant reply
+    # Store AI reply
     st.session_state.chat_history.append(
         {"role": "assistant", "content": answer}
     )
@@ -190,9 +184,10 @@ if question:
 # Display chat history
 for msg in st.session_state.chat_history:
     if msg["role"] == "user":
-        st.markdown(f"**You:** {msg['content']}")
+        st.markdown(f"**🧑 You:** {msg['content']}")
     else:
-        st.markdown(f"**AI:** {msg['content']}")
+        st.markdown(f"**🤖 AI:** {msg['content']}")
+
 # Clear chat history
 if st.button("🧹 Clear Chat History"):
     st.session_state.chat_history = []
