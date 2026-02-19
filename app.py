@@ -153,73 +153,24 @@ EDA:
 st.divider()
 st.subheader("💬 Chat With Your Data")
 
-# Initialize memory if not present
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-st.subheader("💡 Suggested Questions")
-
-suggested_questions = [
-    "Summarize the key insights from this data",
-    "What is the biggest business risk here?",
-    "Which segment is underperforming and why?",
-    "What should management focus on immediately?",
-    "Explain the main trend in simple terms"
-]
-
-cols = st.columns(len(suggested_questions))
-
-selected_question = None
-
-for i, q in enumerate(suggested_questions):
-    if cols[i].button(q):
-        selected_question = q
-
-# Text input
-typed_question = st.text_input("Ask a business question")
-
-# Decide which question to use
-question = selected_question or typed_question
+question = st.text_input("Ask a business question")
 
 if question and "eda" in st.session_state:
-    # Add user message
+    # Add user message to memory
     st.session_state.chat_history.append({
         "role": "user",
         "content": question
     })
 
-    # Build STRICT data-only conversation
-    conversation = f"""
-    You are a data analyst.
-
-    RULES:
-    - Answer ONLY using the information provided below.
-    - Base answers on data patterns, statistics, and EDA.
-    - If the question cannot be reasonably answered from the data, reply exactly:
-    "Not enough data available in the dataset."
-
-    DATA SCHEMA:
-    Columns: {df.columns.tolist()}
-
-    DATA SNAPSHOT (first 5 rows):
-    {df.head().to_string()}
-
-    SUMMARY STATISTICS:
-    {df.describe(include='all').to_string()}
-
-    EDA INSIGHTS:
-    {st.session_state.eda}
-
-    Conversation:
-    """
+    # Build conversation context
+    conversation = f"{CHAT_PROMPT}\n\nEDA:\n{st.session_state.eda}\n\nConversation:\n"
 
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
-    # Call AI ONCE
     answer = ask_llm(conversation)
 
-    # Add AI reply
+    # Add AI reply to memory
     st.session_state.chat_history.append({
         "role": "assistant",
         "content": answer
