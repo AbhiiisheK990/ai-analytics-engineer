@@ -149,9 +149,14 @@ EDA:
         st.session_state.dashboards = dashboards
         st.session_state.sql_used = sql_used
 
-    # ========== CHAT ==========
+# ========== CHAT ==========
 st.divider()
 st.subheader("💬 Chat With Your Data")
+
+# Initialize memory if not present
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 st.subheader("💡 Suggested Questions")
 
 suggested_questions = [
@@ -164,31 +169,47 @@ suggested_questions = [
 
 cols = st.columns(len(suggested_questions))
 
+selected_question = None
+
 for i, q in enumerate(suggested_questions):
     if cols[i].button(q):
-        st.session_state.chat_history.append({
-            "role": "user",
-            "content": q
-        })
+        selected_question = q
 
-question = st.text_input("Ask a business question")
+# Text input
+typed_question = st.text_input("Ask a business question")
+
+# Decide which question to use
+question = selected_question or typed_question
 
 if question and "eda" in st.session_state:
-    # Add user message to memory
+    # Add user message
     st.session_state.chat_history.append({
         "role": "user",
         "content": question
     })
 
-    # Build conversation context
-    conversation = f"{CHAT_PROMPT}\n\nEDA:\n{st.session_state.eda}\n\nConversation:\n"
+    # Build STRICT data-only conversation
+    conversation = f"""
+You are a data analyst.
+
+RULES:
+- Answer ONLY using the dataset and EDA below
+- If the answer is not in the data, say:
+  "Not enough data available in the dataset."
+
+EDA:
+{st.session_state.eda}
+
+Conversation:
+"""
 
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
-        answer = ask_llm(conversation)
+    # Call AI ONCE
+    answer = ask_llm(conversation)
 
-    # Add AI reply to memory
+    # Add AI reply
     st.session_state.chat_history.append({
         "role": "assistant",
         "content": answer
