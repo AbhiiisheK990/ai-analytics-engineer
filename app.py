@@ -188,21 +188,6 @@ if question and "eda" in st.session_state:
         "content": question
     })
 
-    # Build STRICT data-only conversation
-    conversation = f"""
-You are a data analyst.
-
-RULES:
-- Answer ONLY using the dataset and EDA below
-- If the answer is not in the data, say:
-  "Not enough data available in the dataset."
-
-EDA:
-{st.session_state.eda}
-
-Conversation:
-"""
-
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
