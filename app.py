@@ -150,48 +150,49 @@ EDA:
         st.session_state.sql_used = sql_used
 
     # ========== CHAT ==========
-    st.divider()
-st.subheader("💬 AI Chatbot")
-st.info(" Ask questions related only to the uploaded dataset")
-question = st.text_input("Ask anything data-related...")
+st.divider()
+st.subheader("💬 Chat With Your Data")
+st.subheader("💡 Suggested Questions")
 
-if question:
-    # Store user message
-    st.session_state.chat_history.append(
-        {"role": "user", "content": question}
-    )
+suggested_questions = [
+    "Summarize the key insights from this data",
+    "What is the biggest business risk here?",
+    "Which segment is underperforming and why?",
+    "What should management focus on immediately?",
+    "Explain the main trend in simple terms"
+]
 
-    # Build conversation with memory
-    conversation = f"""
-You are a data analyst.
+cols = st.columns(len(suggested_questions))
 
-STRICT RULES:
-- Answer ONLY using the uploaded dataset and the AI-generated EDA.
-- DO NOT use general knowledge.
-- DO NOT explain concepts unrelated to the data.
-- If the answer cannot be derived from the data, reply exactly:
-  "Not enough data available in the dataset."
+for i, q in enumerate(suggested_questions):
+    if cols[i].button(q):
+        st.session_state.chat_history.append({
+            "role": "user",
+            "content": q
+        })
 
-DATA CONTEXT:
-Dataset columns:
-{df.columns.tolist()}
+question = st.text_input("Ask a business question")
 
-EDA SUMMARY:
-{st.session_state.eda}
+if question and "eda" in st.session_state:
+    # Add user message to memory
+    st.session_state.chat_history.append({
+        "role": "user",
+        "content": question
+    })
 
-CHAT HISTORY:
-"""
-    
+    # Build conversation context
+    conversation = f"{CHAT_PROMPT}\n\nEDA:\n{st.session_state.eda}\n\nConversation:\n"
+
     for msg in st.session_state.chat_history:
         conversation += f"{msg['role'].upper()}: {msg['content']}\n"
 
-    # Ask AI
-    answer = ask_llm(conversation)
+        answer = ask_llm(conversation)
 
-    # Store AI reply
-    st.session_state.chat_history.append(
-        {"role": "assistant", "content": answer}
-    )
+    # Add AI reply to memory
+    st.session_state.chat_history.append({
+        "role": "assistant",
+        "content": answer
+    })
 
 # Display chat history
 for msg in st.session_state.chat_history:
