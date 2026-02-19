@@ -95,7 +95,7 @@ EDA:
 
         dashboards = {"Executive": [], "Performance": [], "Risk": []}
         sql_used = []
-        def is_valid_chart(result_df, chart_type, x_col, y_col):
+        def is_valid_dashboard(result_df, chart_type, x_col, y_col):
             # Must have data
             if result_df is None or result_df.empty:
                 return False
