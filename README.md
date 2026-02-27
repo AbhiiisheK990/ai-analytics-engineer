@@ -63,7 +63,7 @@ The system is designed to simulate the workflow of a **Senior Data Analyst / Ana
 ---
 
 ## 🏗️ Architecture Overview
-
+```
 Dataset Upload
 ↓
 AI-Driven EDA
@@ -78,7 +78,7 @@ Conversational BI
 ↓
 PDF Report Export
 
-
+```
 ---
 
 ## 🛠️ Tech Stack
@@ -96,7 +96,7 @@ PDF Report Export
 ---
 
 ## 📂 Project Structure
-
+```
 ai-analytics-engineer/
 │
 ├── app.py
@@ -108,7 +108,7 @@ ai-analytics-engineer/
 │ ├── sql_prompt.txt
 │ └── chat_prompt.txt
 └── README.md
-
+```
 
 ---
 
